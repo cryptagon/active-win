@@ -26,9 +26,15 @@ func printFrontmostApp() {
 
 		let appPid = window[kCGWindowOwnerPID as String] as! pid_t
 
-		// This can't fail as we're only dealing with apps
-		let app = NSRunningApplication(processIdentifier: appPid)!
-		if app.bundleIdentifier == "com.apple.dock" {
+		let appWrapper = NSRunningApplication(processIdentifier: appPid)
+		if appWrapper == nil {
+			continue
+		}
+
+	  let app = appWrapper!
+		let bundleId = app.bundleIdentifier!
+		if bundleId == "com.apple.dock" || bundleId == "com.apple.notificationcenterui" ||
+				bundleId == "com.apple.screencaptureui" {
 			continue
 		}
 
@@ -44,7 +50,7 @@ func printFrontmostApp() {
 			"owner": [
 				"name": window[kCGWindowOwnerName as String] as! String,
 				"processId": appPid,
-				"bundleId": app.bundleIdentifier!,
+				"bundleId": bundleId,
 				"path": app.bundleURL!.path
 			],
 			"memoryUsage": window[kCGWindowMemoryUsage as String] as! Int
